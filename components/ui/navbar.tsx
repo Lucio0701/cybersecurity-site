@@ -26,7 +26,7 @@ export default function Navbar() {
         <Link href="/pubblicazioni">
           <Button variant="outline">Pubblicazioni</Button>
         </Link>
-        <Link href="/contatti">
+        <Link href="contatti">
           <Button variant="outline">Contatti</Button>
         </Link>
       </div>
