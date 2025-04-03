@@ -3,8 +3,13 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import LoginModal from "@/components/ui/loginModal";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
   return (
     <main className="flex flex-col items-center justify-center min-h-screen text-center">
       {/* Hero Section */}
@@ -20,15 +25,23 @@ export default function Home() {
         <p className="mt-4 text-lg text-gray-300 max-w-xl">
           Esplora il nostro laboratorio di sicurezza informatica, ricerca e innovazione.
         </p>
+        <p className="mt-4 text-lg md:text-xl text-gray-300 max-w-2xl relative z-10">
+          Un centro di eccellenza dedicato alla ricerca, formazione e sviluppo di soluzioni innovative per la sicurezza informatica in un mondo sempre più connesso.
+        </p>
         <motion.div
-          className="mt-6"
+          className="mt-6 flex space-x-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 1 }}
         >
-          <Button asChild>
-            <a href="/progetti">Scopri i nostri progetti</a>
+          <Button variant="outline" onClick={() => setIsModalOpen(true)}>
+            <a>Scopri i nostri progetti</a>
           </Button>
+
+          <Button variant="outline" size="lg" onClick={() => router.push("contatti")}>
+            <a >Contattaci</a>
+          </Button>
+          <LoginModal open={isModalOpen} setOpen={setIsModalOpen} />
         </motion.div>
       </motion.section>
 

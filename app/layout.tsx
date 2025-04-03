@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider>
           <Navbar /> {/* Qui aggiungiamo la Navbar */}
-          <main className="container mx-auto p-4">{children}</main> {/* Contenuto delle pagine */}
+        <main className="container mx-auto p-4">{children}</main> {/* Contenuto delle pagine */}
         </ThemeProvider>
         
       </body>
