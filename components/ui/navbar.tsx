@@ -43,10 +43,12 @@ import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import { ThemeToggle } from "./theme-tuggle";
 import LoginModal from "./loginModal"; // Importa il componente LoginModal
+import LoginVero from "./loginVero";
 
 export default function Navbar() {
   const [darkMode, setDarkMode] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Stato per il modale
+  const [isModalOpen, setIsModalOpen] = useState(false); // Stato per la vulnerabilità a SQL Injection
+  const [isLoginVeroOpen, setIsLoginVeroOpen] = useState(false); // Per l’autenticazione reale
 
   return (
     <nav className="w-full bg-gray-900 p-4 flex justify-between items-center shadow-lg">
@@ -63,18 +65,23 @@ export default function Navbar() {
         <Button variant="outline" onClick={() => setIsModalOpen(true)}>
           Progetti
         </Button>
-        <Link href="/pubblicazioni">
+        <Link href="pubblicazioni">
           <Button variant="outline">Pubblicazioni</Button>
         </Link>
         <Link href="/contatti">
           <Button variant="outline">Contatti</Button>
         </Link>
+        <Button variant="outline" onClick={() => setIsLoginVeroOpen(true)} >
+            Login Admin
+          </Button>
       </div>
 
       <ThemeToggle />
 
       {/* Aggiungiamo il LoginModal */}
       <LoginModal open={isModalOpen} setOpen={setIsModalOpen} />
+
+      <LoginVero open={isLoginVeroOpen} setOpen={setIsLoginVeroOpen} />
     </nav>
   );
 }

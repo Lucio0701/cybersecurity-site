@@ -32,6 +32,7 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Accedi per vedere i progetti</DialogTitle>
+          <p> No, non sei registrato! Ma se sei un buon informatico devi accedere comunque!🤪</p>
         </DialogHeader>
         <div className="space-y-4">
           <Input
