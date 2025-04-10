@@ -41,6 +41,7 @@ export interface Publication {
   // Implementazione reale (chiama il backend)
   export class ApiPublicationService implements PublicationService {
     async getPublications(): Promise<Publication[]> {
+      console.log("ciao")
       const token = localStorage.getItem("token"); // Recupera il token se presente
       const response = await fetch("/api/publications", {
         method: "GET",

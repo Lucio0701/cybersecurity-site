@@ -8,5 +8,6 @@ export async function POST(request: Request) {
     body: body,
   });
   const data = await response.json();
+  console.log(data)
   return NextResponse.json(data, { status: response.status });
 }

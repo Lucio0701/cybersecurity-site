@@ -1,10 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import sqlite3
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+import os
+from exporters import PublicationExporter, JSONExporter, CSVExporter, PDFExporter
 
 app = FastAPI()
 
@@ -17,13 +20,20 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-# Modelli
+# Modelli Pydantic
 class User(BaseModel):
     username: str
     role: str
 
 class UserInDB(User):
     hashed_password: str
+
+class PublicationCreate(BaseModel):
+    title: str
+    authors: str
+    year: int
+    category: str
+    abstract: str
 
 class Publication(BaseModel):
     id: int
@@ -40,7 +50,8 @@ class Token(BaseModel):
 
 # Connessione al database
 def get_db():
-    conn = sqlite3.connect("publications.db")
+    conn = sqlite3.connect("../database.db")  # Relativo a backend/src/
+    conn.row_factory = sqlite3.Row
     return conn
 
 # Inizializzazione del database
@@ -135,11 +146,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(status_code=401, detail="Credenziali non valide")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token({"sub": user.username, "role": user.role}, access_token_expires)
-    return {"access_token":  access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer"}
 
 # Endpoint pubblico per ottenere le pubblicazioni
 @app.get("/publications", response_model=list[Publication])
 async def get_publications():
+    print("ciao2")
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("SELECT id, title, authors, year, category, abstract, link FROM publications")
@@ -148,25 +160,154 @@ async def get_publications():
     return [Publication(id=row[0], title=row[1], authors=row[2], year=row[3], category=row[4],
                        abstract=row[5], link=row[6]) for row in rows]
 
-# Endpoint protetto per caricare pubblicazioni (solo admin)
-@app.post("/publications", response_model=dict)
+# Endpoint protetto per aggiungere una pubblicazione (solo dati testuali)
+@app.post("/addPublications", response_model=dict)
 async def add_publication(
-    title: str = Form(...),
-    authors: str = Form(...),
-    year: int = Form(...),
-    category: str = Form(...),
-    abstract: str = Form(...),
-    file: UploadFile = File(...),
+    publication: PublicationCreate,
     user: User = Depends(get_current_admin)
 ):
     conn = get_db()
     cursor = conn.cursor()
-    link = f"/pdf/{file.filename}"
-    cursor.execute("INSERT INTO publications (title, authors, year, category, abstract, link) VALUES (?, ?, ?, ?, ?, ?)",
-                   (title, authors, year, category, abstract, link))
+    # Inserisci la pubblicazione con un link temporaneamente vuoto
+    cursor.execute(
+        "INSERT INTO publications (title, authors, year, category, abstract, link) VALUES (?, ?, ?, ?, ?, ?)",
+        (publication.title, publication.authors, publication.year, publication.category, publication.abstract, "")
+    )
+    # Ottieni l'ID della pubblicazione appena creata
+    publication_id = cursor.lastrowid
     conn.commit()
     conn.close()
-    # Salva il file nella directory public/pdf del frontend
-    with open(f"../public/pdf/{file.filename}", "wb") as f:
-        f.write(await file.read())
-    return {"message": "Pubblicazione aggiunta"}
+    return {"message": "Dati testuali salvati", "publication_id": publication_id}
+
+# Endpoint protetto per caricare il file PDF e aggiornare il link
+@app.post("/uploadFile", response_model=dict)
+async def upload_file(
+    publication_id: int = Form(...),
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_admin)
+):
+    try:
+        # Verifica che il file sia un PDF
+        if not file.content_type.startswith("application/pdf"):
+            raise HTTPException(status_code=400, detail="Il file deve essere un PDF")
+
+        # Crea il percorso per salvare il file
+        file_path = f"../../public/pdf/{file.filename}"
+        # Crea la directory se non esiste
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        # Salva il file
+        with open(file_path, "wb") as f:
+            content = await file.read()
+            if not content:
+                raise HTTPException(status_code=400, detail="Il file è vuoto")
+            f.write(content)
+
+        # Crea il link per il file
+        link = f"/pdf/{file.filename}"
+
+        # Aggiorna il link nel database
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM publications WHERE id = ?", (publication_id,))
+        if not cursor.fetchone():
+            conn.close()
+            raise HTTPException(status_code=404, detail="Pubblicazione non trovata")
+        cursor.execute("UPDATE publications SET link = ? WHERE id = ?", (link, publication_id))
+        conn.commit()
+        conn.close()
+
+        return {"message": "File caricato e pubblicazione aggiornata"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Errore in upload_file: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Errore durante il caricamento del file: {str(e)}")
+    
+
+    # Nuovo endpoint per eliminare una pubblicazione
+@app.delete("/publications/{publication_id}", response_model=dict)
+async def delete_publication(publication_id: int, user: User = Depends(get_current_admin)):
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+
+        # Verifica che la pubblicazione esista
+        cursor.execute("SELECT link FROM publications WHERE id = ?", (publication_id,))
+        publication = cursor.fetchone()
+        if not publication:
+            conn.close()
+            raise HTTPException(status_code=404, detail="Pubblicazione non trovata")
+
+        # Elimina il file PDF associato, se esiste
+        link = publication["link"]
+        if link:
+            file_path = f"../../public{link}"  # Es. ../../public/pdf/nomefile.pdf
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+        # Elimina la pubblicazione dal database
+        cursor.execute("DELETE FROM publications WHERE id = ?", (publication_id,))
+        conn.commit()
+        conn.close()
+
+        return {"message": "Pubblicazione eliminata con successo"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Errore in delete_publication: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Errore durante l'eliminazione della pubblicazione: {str(e)}")
+    
+# Nuovo endpoint per esportare le pubblicazioni
+@app.get("/export", response_class=StreamingResponse)
+async def export_publications(format: str = "json", user: User = Depends(get_current_admin)):
+    try:
+        # Recupera le pubblicazioni
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, title, authors, year, category, abstract, link FROM publications")
+        rows = cursor.fetchall()
+        conn.close()
+        publications = [
+            {
+                "id": row["id"],
+                "title": row["title"],
+                "authors": row["authors"],
+                "year": row["year"],
+                "category": row["category"],
+                "abstract": row["abstract"],
+                "link": row["link"],
+            }
+            for row in rows
+        ]
+
+        # Seleziona l'implementazione in base al formato
+        if format.lower() == "json":
+            exporter = PublicationExporter(JSONExporter())
+            content_type = "application/json"
+            filename = "publications.json"
+        elif format.lower() == "csv":
+            exporter = PublicationExporter(CSVExporter())
+            content_type = "text/csv"
+            filename = "publications.csv"
+        elif format.lower() == "pdf":
+            exporter = PublicationExporter(PDFExporter())
+            content_type = "application/pdf"
+            filename = "publications.pdf"
+        else:
+            raise HTTPException(status_code=400, detail="Formato non supportato. Usa 'json', 'csv' o 'pdf'.")
+
+        # Esporta i dati
+        data = exporter.export(publications)
+
+        # Restituisci il file come streaming response
+        return StreamingResponse(
+            iter([data]),
+            media_type=content_type,
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Errore in export_publications: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Errore durante l'esportazione: {str(e)}")
