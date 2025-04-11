@@ -4,7 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { QRCode } from "react-qrcode-logo";
 
 interface LoginModalProps {
   open: boolean;
@@ -14,16 +16,18 @@ interface LoginModalProps {
 export default function LoginModal({ open, setOpen }: LoginModalProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [attempts, setAttempts] = useState(0);
+  const [showQR, setShowQR] = useState(false);
   const router = useRouter();
 
   const handleLogin = () => {
-    // Simulazione vulnerabile a SQL Injection
     if (username === "' OR '1'='1" || password === "' OR '1'='1") {
       alert("Login bypassato con successo!");
       setOpen(false);
       router.push("/progetti");
     } else {
       alert("Credenziali errate!");
+      setAttempts((prev) => prev + 1);
     }
   };
 
@@ -32,21 +36,87 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Accedi per vedere i progetti</DialogTitle>
-          <p> No, non sei registrato! Ma se sei un buon informatico devi accedere comunque!🤪</p>
+          <p className="text-sm text-gray-500">
+            No, non sei registrato! Ma se sei un buon informatico devi accedere comunque! 🤪
+          </p>
         </DialogHeader>
+
         <div className="space-y-4">
-          <Input
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button onClick={handleLogin}>Login</Button>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Input
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Button onClick={handleLogin}>Login</Button>
+          </motion.div>
+
+          {attempts >= 3 && !showQR && (
+            <motion.p
+              className="text-xs text-red-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              Tip: Prova con <code>' OR '1'='1</code> oppure...
+            </motion.p>
+          )}
+
+          {!showQR ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+            >
+              <Button
+                variant="link"
+                className="text-xs underline text-gray-500 hover:text-blue-600"
+                onClick={() => setShowQR(true)}
+              >
+                Non sei un hacker? Scansiona questo
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.div
+              className="flex flex-col items-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <p className="text-sm text-center mb-2">
+                Ecco il tuo pass per accedere 👀
+              </p>
+              <QRCode value="http://localhost:3000/progetti" size={128} />
+              <p className="text-xs text-gray-500 mt-2">Scansiona o clicca qui sotto ↓</p>
+              <Button variant="outline" onClick={() => router.push("/progetti")}>
+                Vai ai progetti
+              </Button>
+            </motion.div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -311,3 +311,78 @@ async def export_publications(format: str = "json", user: User = Depends(get_cur
     except Exception as e:
         print(f"Errore in export_publications: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Errore durante l'esportazione: {str(e)}")
+    
+# Nuovo endpoint per aggiornare una pubblicazione
+@app.put("/publications/{publication_id}", response_model=dict)
+async def update_publication(
+    publication_id: int,
+    publication: PublicationCreate,
+    user: User = Depends(get_current_admin)
+):
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM publications WHERE id = ?", (publication_id,))
+        if not cursor.fetchone():
+            conn.close()
+            raise HTTPException(status_code=404, detail="Pubblicazione non trovata")
+        cursor.execute(
+            "UPDATE publications SET title = ?, authors = ?, year = ?, category = ?, abstract = ? WHERE id = ?",
+            (publication.title, publication.authors, publication.year, publication.category, publication.abstract, publication_id)
+        )
+        conn.commit()
+        conn.close()
+        return {"message": "Pubblicazione aggiornata con successo"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Errore in update_publication: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Errore durante l'aggiornamento della pubblicazione: {str(e)}")
+
+# Nuovo endpoint per aggiornare il file PDF di una pubblicazione
+@app.put("/publications/{publication_id}/file", response_model=dict)
+async def update_publication_file(
+    publication_id: int,
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_admin)
+):
+    try:
+        if not file.content_type.startswith("application/pdf"):
+            raise HTTPException(status_code=400, detail="Il file deve essere un PDF")
+
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT link FROM publications WHERE id = ?", (publication_id,))
+        publication = cursor.fetchone()
+        if not publication:
+            conn.close()
+            raise HTTPException(status_code=404, detail="Pubblicazione non trovata")
+
+        # Elimina il vecchio file PDF, se esiste
+        old_link = publication["link"]
+        if old_link:
+            old_file_path = f"../../public{old_link}"
+            if os.path.exists(old_file_path):
+                os.remove(old_file_path)
+
+        # Salva il nuovo file
+        new_file_path = f"../../public/pdf/{file.filename}"
+        os.makedirs(os.path.dirname(new_file_path), exist_ok=True)
+        with open(new_file_path, "wb") as f:
+            content = await file.read()
+            if not content:
+                raise HTTPException(status_code=400, detail="Il file è vuoto")
+            f.write(content)
+
+        # Aggiorna il link nel database
+        new_link = f"/pdf/{file.filename}"
+        cursor.execute("UPDATE publications SET link = ? WHERE id = ?", (new_link, publication_id))
+        conn.commit()
+        conn.close()
+
+        return {"message": "File PDF aggiornato con successo"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Errore in update_publication_file: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Errore durante l'aggiornamento del file: {str(e)}")

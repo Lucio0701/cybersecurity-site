@@ -355,7 +355,7 @@ export default function Admin() {
         category: editCategory,
         abstract: editAbstract,
       };
-      const updateResponse = await fetch(`/api/updatePublication/${editPublication.id}`, {
+      const updateResponse = await fetch(`/api/updatePublication?id=${editPublication.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -373,7 +373,8 @@ export default function Admin() {
         const formData = new FormData();
         formData.append("file", editFile);
 
-        const updateFileResponse = await fetch(`/api/updatePublicationFile/${editPublication.id}`, {
+        // Modificato per usare query parameter
+        const updateFileResponse = await fetch(`/api/updatePublicationFile?id=${editPublication.id}`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -463,7 +464,7 @@ export default function Admin() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="mt-1 w-full p-2 border rounded-md text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Inserisci il titolo"
                 />
               </div>
@@ -474,7 +475,7 @@ export default function Admin() {
                   value={authors}
                   onChange={(e) => setAuthors(e.target.value)}
                   required
-                  className="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="mt-1 w-full p-2 border rounded-md text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Inserisci gli autori"
                 />
               </div>
@@ -487,7 +488,7 @@ export default function Admin() {
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
                   required
-                  className="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="mt-1 w-full p-2 border rounded-md text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Inserisci l'anno"
                 />
               </div>
@@ -498,7 +499,7 @@ export default function Admin() {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   required
-                  className="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="mt-1 w-full p-2 border rounded-md text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Inserisci la categoria"
                 />
               </div>
@@ -509,7 +510,7 @@ export default function Admin() {
                 value={abstract}
                 onChange={(e) => setAbstract(e.target.value)}
                 required
-                className="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="mt-1 w-full p-2 border rounded-md text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 rows={4}
                 placeholder="Inserisci l'abstract"
               />
@@ -521,7 +522,7 @@ export default function Admin() {
                 accept="application/pdf"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
                 required
-                className="mt-1 w-full p-2 border rounded-md"
+                className="mt-1 w-full p-2 border text-black rounded-md"
               />
             </div>
             <button

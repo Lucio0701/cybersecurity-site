@@ -9,9 +9,10 @@ import { useRouter } from "next/navigation";
 interface LoginVeroProps {
   open: boolean;
   setOpen: (value: boolean) => void;
+  onSuccess: () => void; // ✅ notificare quando il login ha successo
 }
 
-export default function LoginVero({ open, setOpen }: LoginVeroProps) {
+export default function LoginVero({ open, setOpen, onSuccess }: LoginVeroProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -22,12 +23,15 @@ export default function LoginVero({ open, setOpen }: LoginVeroProps) {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ username, password }).toString(),
     });
+
     const data = await response.json();
     if (response.ok) {
-      localStorage.setItem("token", data.access_token); // Salva il token
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("isAdmin", "true"); // 👈 Salva lo stato
       alert("Login riuscito!");
       setOpen(false);
-      router.push("/admin"); // Reindirizza all’admin
+      onSuccess(); // 👈 Notifica alla navbar che è loggato
+      router.push("/admin");
     } else {
       alert("Credenziali errate!");
     }
