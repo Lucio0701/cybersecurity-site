@@ -26,9 +26,14 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
       setOpen(false);
       router.push("/progetti");
     } else {
+      setAttempts((prev) => prev + 1); // Spostato PRIMA
       alert("Credenziali errate!");
-      setAttempts((prev) => prev + 1);
     }
+  };
+
+  const handleQRCodeAccess = () => {
+    setOpen(false);
+    router.push("/progetti");
   };
 
   return (
@@ -75,6 +80,7 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
             <Button onClick={handleLogin}>Login</Button>
           </motion.div>
 
+          {/* Mostra il suggerimento solo se tentativi >= 3 */}
           {attempts >= 3 && !showQR && (
             <motion.p
               className="text-xs text-red-500"
@@ -86,6 +92,7 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
             </motion.p>
           )}
 
+          {/* Mostra il link per QR solo se non è ancora visibile */}
           {!showQR ? (
             <motion.div
               initial={{ opacity: 0 }}
@@ -112,7 +119,7 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
               </p>
               <QRCode value="http://localhost:3000/progetti" size={128} />
               <p className="text-xs text-gray-500 mt-2">Scansiona o clicca qui sotto ↓</p>
-              <Button variant="outline" onClick={() => router.push("/progetti")}>
+              <Button variant="outline" onClick={handleQRCodeAccess}>
                 Vai ai progetti
               </Button>
             </motion.div>
