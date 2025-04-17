@@ -2,7 +2,7 @@ import csv
 import json
 from abc import ABC, abstractmethod
 from typing import List, Dict
-from reportlab.lib.pagesizes import letter  # Per generare PDF
+from reportlab.lib.pagesizes import letter  # per pdf
 from reportlab.pdfgen import canvas
 import io
 
@@ -56,7 +56,7 @@ class PDFExporter(Exporter):
         buffer.seek(0)
         return buffer.read()
 
-# Astrazione (Refined Abstraction)
+# Astrazione 
 class PublicationExporter:
     def __init__(self, exporter: Exporter):
         self.exporter = exporter

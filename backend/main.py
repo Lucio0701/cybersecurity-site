@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form
+'''from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -9,8 +9,24 @@ from passlib.context import CryptContext
 import os
 from exporters import PublicationExporter, JSONExporter, CSVExporter, PDFExporter
 
+app = FastAPI()'''
+
+from fastapi import FastAPI
+from backend.auth.routes import router as auth_router
+from backend.publications.routes import router as publications_router
+from backend.database.connection import init_db
+
 app = FastAPI()
 
+# Inizializzazione del database
+app.on_event("startup")(init_db)
+
+# Registrazione dei router
+app.include_router(auth_router)
+app.include_router(publications_router)
+
+
+'''
 # Configurazione JWT
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
@@ -385,4 +401,4 @@ async def update_publication_file(
         raise e
     except Exception as e:
         print(f"Errore in update_publication_file: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Errore durante l'aggiornamento del file: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Errore durante l'aggiornamento del file: {str(e)}")'''

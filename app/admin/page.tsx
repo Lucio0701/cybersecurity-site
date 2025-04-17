@@ -70,7 +70,7 @@ export default function Admin() {
 
       if (!addResponse.ok) {
         const errorData = await addResponse.json();
-        throw new Error(errorData.error || "Errore nel salvataggio dei dati testuali");
+        throw new Error(errorData.error || "Errore nel salvataggio dei dati testuali", errorData);
       }
 
       const addResult = await addResponse.json();

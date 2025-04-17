@@ -5,6 +5,7 @@ export async function PUT(request: Request) {
   const { searchParams } = new URL(request.url);
   const publicationId = searchParams.get("id");
 
+
   if (!publicationId) {
     return NextResponse.json({ error: "ID della pubblicazione mancante" }, { status: 400 });
   }

@@ -1,57 +1,19 @@
-/*"use client";
-
-import { useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
-import { ThemeToggle } from "./theme-tuggle";
-
-export default function Navbar() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  return (
-    <nav className="w-full bg-gray-900 bg-gray-900 p-4 flex justify-between items-center shadow-lg">
-      <h1 className="text-xl font-bold">Cybersecurity Lab</h1>
-
-      <div className="flex gap-4">
-        <Link href="/">
-          <Button variant="outline">Home</Button>
-        </Link>
-        <Link href="chi-siamo">
-          <Button variant="outline">Chi siamo</Button>
-        </Link>
-        <Link href="/progetti">
-          <Button variant="outline">Progetti</Button>
-        </Link>
-        <Link href="/pubblicazioni">
-          <Button variant="outline">Pubblicazioni</Button>
-        </Link>
-        <Link href="contatti">
-          <Button variant="outline">Contatti</Button>
-        </Link>
-      </div>
-      
-        <ThemeToggle />
-    </nav>
-  );
-}*/
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "./theme-tuggle";
 import LoginModal from "./loginModal";
 import LoginVero from "./loginVero";
 import { useRouter } from "next/navigation";
+import { Cpu } from "lucide-react";
 
 export default function Navbar() {
-  const [isModalOpen, setIsModalOpen] = useState(false); // Progetti (SQLi)
-  const [isLoginVeroOpen, setIsLoginVeroOpen] = useState(false); // Login Admin
-  const [isAdmin, setIsAdmin] = useState(false); // Stato login persistente
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginVeroOpen, setIsLoginVeroOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
-  // Controlla localStorage al primo render
   useEffect(() => {
     const adminLoggedIn = localStorage.getItem("isAdmin");
     if (adminLoggedIn === "true") {
@@ -59,62 +21,50 @@ export default function Navbar() {
     }
   }, []);
 
-  // Funzione di logout
   const handleLogout = () => {
     localStorage.removeItem("isAdmin");
     setIsAdmin(false);
     router.push("/");
   };
 
+
   return (
-    <nav className="w-full bg-gray-900 p-4 flex justify-between items-center shadow-lg">
-      <h1 className="text-xl font-bold text-white">Cybersecurity Lab</h1>
+    <nav className="relative w-full bg-black bg-opacity-90 border-b border-green-600 p-4 shadow-[0_0_15px_#00ff88] font-mono z-50">
+      {/* LOGO con effetto glitch */}
+      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+        <h1 className="text-xl md:text-2xl font-bold text-green-400 glitch-text relative z-10">
+          &gt; CyberLab
+        </h1>
+      </div>
 
-      <div className="flex gap-4">
-        <Link href="/">
-          <Button variant="outline">Home</Button>
-        </Link>
-        <Link href="/chi-siamo">
-          <Button variant="outline">Chi siamo</Button>
-        </Link>
+      {/* NAV LINKS */}
+      <div className="flex justify-center gap-3 text-sm">
+        <Link href="/"><Button variant="ghost"  className="glitch-button">Home</Button></Link>
+        <Link href="/chi-siamo"><Button variant="ghost" className="glitch-button">Chi siamo</Button></Link>
+        <Link href="/progetti"><Button variant="ghost"  className="glitch-button">Progetti</Button></Link>
+        <Link href="/pubblicazioni"><Button variant="ghost"  className="glitch-button">Pubblicazioni</Button></Link>
+        <Button variant="ghost" onClick={() => setIsModalOpen(true)} className="glitch-button">Contatti</Button>
 
-        <Button variant="outline" onClick={() => setIsModalOpen(true)}>
-          Progetti
-        </Button>
-
-        <Link href="/pubblicazioni">
-          <Button variant="outline">Pubblicazioni</Button>
-        </Link>
-        <Link href="/contatti">
-          <Button variant="outline">Contatti</Button>
-        </Link>
-
-        {/* Se loggato mostra Area Admin e Logout, altrimenti il Login */}
         {isAdmin ? (
           <>
             <Link href="/admin">
-              <Button variant="default">Area Admin</Button>
+              <Button variant="outline" className="border-green-500 text-green-400 hover:bg-green-800 hover:text-white">Admin</Button>
             </Link>
-            <Button variant="destructive" onClick={handleLogout}>
-              Logout
-            </Button>
+            <Button variant="destructive" onClick={handleLogout} className="bg-red-600 hover:bg-red-800 text-white">Logout</Button>
           </>
         ) : (
-          <Button variant="outline" onClick={() => setIsLoginVeroOpen(true)}>
-            Login Admin
-          </Button>
+          <Button variant="outline" onClick={() => setIsLoginVeroOpen(true)} className="border-green-500 text-green-400 hover:bg-green-800 hover:text-white">Login Admin</Button>
         )}
       </div>
 
-      <ThemeToggle />
+      {/* CHIP FUTURISTICO */}
+      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+        <Cpu className="w-6 h-6 text-green-400 animate-pulse" />
+      </div>
 
       {/* Modali */}
       <LoginModal open={isModalOpen} setOpen={setIsModalOpen} />
-      <LoginVero
-        open={isLoginVeroOpen}
-        setOpen={setIsLoginVeroOpen}
-        onSuccess={() => setIsAdmin(true)} // facciamo callback quando loggato
-      />
+      <LoginVero open={isLoginVeroOpen} setOpen={setIsLoginVeroOpen} onSuccess={() => setIsAdmin(true)} />
     </nav>
   );
 }

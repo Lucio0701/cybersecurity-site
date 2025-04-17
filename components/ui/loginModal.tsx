@@ -24,7 +24,7 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
     if (username === "' OR '1'='1" || password === "' OR '1'='1") {
       alert("Login bypassato con successo!");
       setOpen(false);
-      router.push("/progetti");
+      router.push("/contatti");
     } else {
       setAttempts((prev) => prev + 1); // Spostato PRIMA
       alert("Credenziali errate!");
@@ -33,14 +33,14 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
 
   const handleQRCodeAccess = () => {
     setOpen(false);
-    router.push("/progetti");
+    router.push("/contatti");
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Accedi per vedere i progetti</DialogTitle>
+          <DialogTitle>Accedi per contattarci!</DialogTitle>
           <p className="text-sm text-gray-500">
             No, non sei registrato! Ma se sei un buon informatico devi accedere comunque! 🤪
           </p>
@@ -88,7 +88,7 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              Tip: Prova con <code>' OR '1'='1</code> oppure...
+              Lui: <code>' OR '1'='1</code> ti dice qualcosa? Oppure...
             </motion.p>
           )}
 
@@ -117,10 +117,10 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
               <p className="text-sm text-center mb-2">
                 Ecco il tuo pass per accedere 👀
               </p>
-              <QRCode value="http://localhost:3000/progetti" size={128} />
+              <QRCode value="http://localhost:3000/contatti" size={128} />
               <p className="text-xs text-gray-500 mt-2">Scansiona o clicca qui sotto ↓</p>
               <Button variant="outline" onClick={handleQRCodeAccess}>
-                Vai ai progetti
+                Contattaci
               </Button>
             </motion.div>
           )}
