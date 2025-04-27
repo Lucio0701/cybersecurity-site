@@ -21,7 +21,7 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_db():
-    conn = sqlite3.connect("../database.db")  # Relativo a backend/src/
+    conn = sqlite3.connect("../database.db")  # Relativo a backend/
     conn.row_factory = sqlite3.Row
     return conn
 

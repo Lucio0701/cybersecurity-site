@@ -18,9 +18,9 @@ export async function POST(request: Request) {
     body: formData,
   });
 
-  // Controlla lo status della risposta prima di parsarla
+  // Controllo status della risposta prima di parsarla
   if (!response.ok) {
-    const errorText = await response.text(); // Leggi la risposta come testo
+    const errorText = await response.text(); 
     console.error("POST /api/uploadFile - Errore dal backend:", errorText, "Status:", response.status);
     return NextResponse.json({ error: errorText }, { status: response.status });
   }

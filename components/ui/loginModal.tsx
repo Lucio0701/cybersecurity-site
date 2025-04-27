@@ -26,7 +26,7 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
       setOpen(false);
       router.push("/contatti");
     } else {
-      setAttempts((prev) => prev + 1); // Spostato PRIMA
+      setAttempts((prev) => prev + 1); 
       alert("Credenziali errate!");
     }
   };

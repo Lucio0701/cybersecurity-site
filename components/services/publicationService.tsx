@@ -47,7 +47,7 @@ export interface Publication {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token || ""}`, // Passa il token (opzionale qui)
+          "Authorization": `Bearer ${token || ""}`, // Passa il token 
         },
       });
       if (!response.ok) throw new Error("Errore nel recupero delle pubblicazioni");

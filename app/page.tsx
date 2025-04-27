@@ -14,7 +14,6 @@ export default function Home() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen text-center bg-black text-white">
-      {/* Animazione digitazione */}
       <style>
         {`
           .typing {
@@ -37,6 +36,38 @@ export default function Home() {
         `}
       </style>
 
+      <style>
+        {`
+          .home-button {
+            position: relative;
+            color: #00ff88;
+            transition: all 0.3s ease-in-out;
+          }
+          .home-button::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: #00ff88;
+            transition: width 0.3s ease;
+          }
+          .home-button:hover::after {
+            width: 100%;
+          }
+
+          @keyframes pulse-smooth {
+            0%, 100% { transform: scale(1); opacity: 1 }
+            50% { transform: scale(1.1); opacity: 0.7 }
+          }
+
+          .animate-smooth-pulse {
+            animation: pulse-smooth 2s infinite;
+          }
+        `}
+      </style>
+
       {/* Hero Section */}
       <motion.section
         className="w-full flex flex-col items-center justify-center bg-gradient-to-b from-black to-gray-900 text-white py-20 px-6"
@@ -44,6 +75,23 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
+        {/* 🔥 Logo in apertura */}
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 3, ease: "easeInOut"}}
+        >
+          <Image
+            src="/logo_animato.svg"
+            alt="Logo UNICAL Cybersecurity"
+            width={220}
+            height={220}
+            className="mx-auto drop-shadow-[0_0_15px_#00ff00]"
+            priority
+          />
+        </motion.div>
+
         <h1 className="text-5xl font-bold mb-2 text-green-400 typing">
           Benvenuto nel Cybersecurity Lab
         </h1>
@@ -53,16 +101,17 @@ export default function Home() {
         <p className="mt-4 text-lg md:text-xl text-gray-300 max-w-2xl">
           Un centro di eccellenza dedicato alla ricerca, formazione e sviluppo di soluzioni innovative per la sicurezza informatica in un mondo sempre più connesso.
         </p>
+
         <motion.div
           className="mt-6 flex space-x-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 1 }}
         >
-          <Button variant="outline" size="lg" onClick={() => router.push("progetti")}>
+          <Button variant="ghost" className="home-button" size="lg" onClick={() => router.push("progetti")}>
             <a>Scopri i nostri progetti</a>
           </Button>
-          <Button variant="outline" onClick={() => setIsModalOpen(true)}>
+          <Button variant="ghost" className="home-button" onClick={() => setIsModalOpen(true)}>
             <a>Contattaci</a>
           </Button>
           <LoginModal open={isModalOpen} setOpen={setIsModalOpen} />

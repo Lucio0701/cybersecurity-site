@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/ui/navbar"; // Importa la Navbar
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import Navbar from "@/components/ui/navbar"; 
 import Footer from "@/components/ui/footer";
 
 const geistSans = Geist({
@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="it">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider>
-          <Navbar /> {/* Qui aggiungiamo la Navbar */}
+          <Navbar /> {/*Navbar */}
         <main className="container mx-auto p-4">{children}</main> {/* Contenuto delle pagine */}
         <Footer />
         </ThemeProvider>

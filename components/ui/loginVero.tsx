@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 interface LoginVeroProps {
   open: boolean;
   setOpen: (value: boolean) => void;
-  onSuccess: () => void; // ✅ notificare quando il login ha successo
+  onSuccess: () => void; 
 }
 
 export default function LoginVero({ open, setOpen, onSuccess }: LoginVeroProps) {
@@ -27,10 +27,10 @@ export default function LoginVero({ open, setOpen, onSuccess }: LoginVeroProps) 
     const data = await response.json();
     if (response.ok) {
       localStorage.setItem("token", data.access_token);
-      localStorage.setItem("isAdmin", "true"); // 👈 Salva lo stato
+      localStorage.setItem("isAdmin", "true"); 
       alert("Login riuscito!");
       setOpen(false);
-      onSuccess(); // 👈 Notifica alla navbar che è loggato
+      onSuccess(); 
       router.push("/admin");
     } else {
       alert("Credenziali errate!");

@@ -9,16 +9,19 @@ export default function Progetti() {
       title: "Analisi Malware",
       image: "/malware.jpg",
       description: "Scopri come analizzare, scomporre e comprendere i malware moderni.",
+      link: "/pdf/Documento Cyberlab.pdf", 
     },
     {
       title: "Pentesting Avanzato",
       image: "/pentesting.jpg",
       description: "Tecniche di penetration testing per individuare e sfruttare vulnerabilità.",
+      link: "",
     },
     {
       title: "AI e Cybersecurity",
       image: "/ai-cyber.jpg",
       description: "L’intelligenza artificiale applicata alla sicurezza informatica.",
+      link: "",
     },
   ];
 
@@ -64,7 +67,6 @@ export default function Progetti() {
         `}
       </style>
 
-      {/* Titolo con effetto glitch */}
       <motion.h1
         className="text-5xl font-bold text-center glitch"
         data-text="I Nostri Progetti"
@@ -75,7 +77,6 @@ export default function Progetti() {
         I Nostri Progetti
       </motion.h1>
 
-      {/* Sottotitolo */}
       <motion.p
         className="text-md text-center text-gray-400 mt-4 max-w-3xl mx-auto"
         initial={{ opacity: 0 }}
@@ -85,7 +86,6 @@ export default function Progetti() {
         Scopri le nostre ricerche più avanzate nel campo della cybersecurity.
       </motion.p>
 
-      {/* Griglia dei progetti */}
       <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 px-6">
         {projects.map((project, index) => (
           <motion.div
@@ -106,15 +106,19 @@ export default function Progetti() {
             <div className="p-6">
               <h3 className="text-2xl font-semibold text-green-300">{project.title}</h3>
               <p className="text-gray-400 mt-2">{project.description}</p>
-              <button className="mt-4 px-4 py-2 border border-green-400 text-green-300 hover:bg-green-400 hover:text-black transition-colors rounded">
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-block px-4 py-2 border border-green-400 text-green-300 hover:bg-green-400 hover:text-black transition-colors rounded"
+              >
                 Scopri di più
-              </button>
+              </a>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Sfondo effetto foschia digitale */}
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-green-400/10 to-transparent pointer-events-none z-[-1]" />
     </main>
   );

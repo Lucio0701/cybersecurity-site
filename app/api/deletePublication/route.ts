@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(request: Request) {
   const token = request.headers.get("Authorization") || "";
-  // Estrai l'ID dai query parameter
+  // Estrazione ID dai query parameter
   const url = new URL(request.url);
   const publicationId = url.searchParams.get("id");
 
