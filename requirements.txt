@@ -1,7 +1,0 @@
-fastapi
-os
-sqlite3
-pydantic
-datetime
-jose
-passlib

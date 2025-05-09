@@ -3,11 +3,11 @@ from fastapi.responses import StreamingResponse
 from typing import List
 import sqlite3
 import os
-from backend.database.connection import get_db
-from backend.auth.utils import get_current_admin, UserInDB, User
-from backend.exporters import PublicationExporter, JSONExporter, CSVExporter, PDFExporter
-from backend.publications.models import Publication, PublicationCreate
-from backend.publications.utils import save_file
+from database.connection import get_db
+from auth.utils import get_current_admin, UserInDB, User
+from exporters import PublicationExporter, JSONExporter, CSVExporter, PDFExporter
+from publications.models import Publication, PublicationCreate
+from publications.utils import save_file
 
 router = APIRouter (tags=["publications"])
 

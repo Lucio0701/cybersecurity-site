@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from backend.auth.models import User, UserInDB
+from auth.models import User, UserInDB
 import sqlite3
 
 # Configurazione JWT

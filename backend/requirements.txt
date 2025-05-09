@@ -1,0 +1,8 @@
+fastapi
+pydantic
+datetime
+python-jose
+passlib
+uvicorn
+python-multipart
+reportlab

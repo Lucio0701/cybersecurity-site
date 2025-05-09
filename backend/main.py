@@ -1,8 +1,8 @@
 
 from fastapi import FastAPI
-from backend.auth.routes import router as auth_router
-from backend.publications.routes import router as publications_router
-from backend.database.connection import init_db
+from auth.routes import router as auth_router
+from publications.routes import router as publications_router
+from database.connection import init_db
 
 app = FastAPI()
 
