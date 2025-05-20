@@ -88,7 +88,7 @@ export default function LoginModal({ open, setOpen }: LoginModalProps) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              Lui: <code>' OR '1'='1</code> ti dice qualcosa? Oppure...
+              Non mollare: <code>' OR '1'='1</code> ti dice qualcosa? Oppure...
             </motion.p>
           )}
 

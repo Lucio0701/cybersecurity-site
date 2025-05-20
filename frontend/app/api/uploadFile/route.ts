@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     token,
   });
 
-  const response = await fetch("http://127.0.0.1:8000/uploadFile", {
+  const response = await fetch("http://backend:8000/uploadFile", {
     method: "POST",
     headers: {
       Authorization: token,

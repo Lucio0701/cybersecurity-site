@@ -15,7 +15,7 @@ export async function DELETE(request: Request) {
     token,
   });
 
-  const response = await fetch(`http://127.0.0.1:8000/publications/${publicationId}`, {
+  const response = await fetch(`http://backend:8000/publications/${publicationId}`, {
     method: "DELETE",
     headers: {
       Authorization: token,

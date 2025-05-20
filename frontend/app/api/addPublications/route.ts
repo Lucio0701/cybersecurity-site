@@ -6,7 +6,7 @@ export async function POST(request: Request) {
 
   console.log("POST /api/addPublications - Dati inviati al backend:", data, "Token:", token);
 
-  const response = await fetch("http://127.0.0.1:8000/addPublications", {
+  const response = await fetch("http://backend:8000/addPublications", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     token,
   });
 
-  const response = await fetch(`http://127.0.0.1:8000/export?format=${format}`, {
+  const response = await fetch(`http://backend:8000/export?format=${format}`, {
     method: "GET",
     headers: {
       Authorization: token,

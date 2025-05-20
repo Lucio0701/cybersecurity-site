@@ -75,7 +75,7 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        {/* 🔥 Logo in apertura */}
+        {/*Logo in apertura */}
         <motion.div
           className="mb-6"
           initial={{ opacity: 0, scale: 0.8 }}
